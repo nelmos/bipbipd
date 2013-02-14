@@ -1,0 +1,5 @@
+Mise en place de la gestion du mode - OK
+Refonte du process de demarrage - OK
+ - Ordre de priorité des arguments de demarrage : defaut > fichier de conf > arguments
+
+

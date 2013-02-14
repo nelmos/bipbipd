@@ -1,0 +1,2 @@
+Ajouter erreur en cas d'absence du check
+Ajouter le controle des notified_host et notified_service pour les requetes passive

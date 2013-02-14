@@ -1,0 +1,41 @@
+*************************
+* Format de la commande *
+*************************
+
+bipbipd -h=vm-test -c=check_cpu -a=0,1,2|2,1,0
+bipbibd -h=vm-test -m=wrapper -c=check_cpu -a=0,1,2|2,1,0 
+bipbipd -h=vm-test -rt=passive ?????
+
+Informations lié à l'host
+  - Récupère le nom/ip de l'host
+    
+
+
+Informations lié au type de requete
+  - Récupère le type de requete
+    => -rt=request_type
+    => --request_type=request_type
+    => values : active|passive
+    => default : active
+
+Informations lié au mode
+  - Récupère le mode de fonctionnement
+    => -m=mode
+    => --mode=mode
+    => values : standalone|wrapper
+    => Default : standalone    
+
+Informations lié au check 
+  - Récupère le check (nom de la sonde)
+    => -c=ckeck_name
+    => --check=check_name
+
+  - Récupère les arguments de la sonde 
+    => -a=arg1|arg2|arg3
+    => --args=arg1|arg2|arg3 
+
+
+En fonction de RT, appeler uniquement les fonctions nécessaires pour le type de requete
+
+Le client doit interroger la base de donnée :
+

@@ -1,0 +1,7 @@
+check par défaut -> |ID_CHECK|ARGS_BY_DEFAULT|ARGS_BIPBIP|
+check par machine -> |ID_MACHINE|ID_CHECK|ARGS|ARGS_BIPBIP|
+
+(Si rien n'est renseigné dans le champ "ARGS_BIPBIP", prendre la valeur par défaut (à ajouter dans le script de la cmd)
+
+check ->    |ID|NAME_CHECK|DESCRIPTION|
+machine ->  |ID|NAME_MACHINE|

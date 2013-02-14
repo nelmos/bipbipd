@@ -1,0 +1,38 @@
+++++ 1° What's bipbipd ? ++++
+
+  bipbipd is a middleware like NRPE/NCSA, currently in development.
+  He's a server design for receive both Active & Passive monitoring request*. 
+
+  After request analysis, bipbipd can knows what to do :
+    - if Active_check type request : Start active check en send response 
+    - if Passive_check type request : Write data in Nagios Command pipe 
+
+  Features currently in development :
+    - Log fonction
+	- Relay fonction
+    - Securing communication
+
+++++ 2° How to use bipbipd ? ++++
+ 
+ In your bipbipd source repository :
+  ./bipbipd.rb
+ 
+  => With this start command, bipbipd start in "dual" mode (default), verbose normal (default), and with logfile /var/log/bipbipd.log
+    See above list of start default values :
+      => mode (-m) : dual
+	  => verbose_lvl (-v) : 0 
+	  => path_config (-path_cfg) : /etc/bipbipd/bipbipd.yaml
+	  => path_log (-path_log) : /var/log/bipbipd.log
+	  => path_plugin (-path_plugin) : /etc/bipbipd/plugins
+	  => path_cmd_nagios (-path_cmd_nagios) : /usr/local/nagios/var/rw/nagios.cmd
+
+++++ 3° Submit data format ++++
+ 
+
+  => Active Check
+  
+  Active check request's characterized by :
+   
+
+  => Passive Check
+ 
