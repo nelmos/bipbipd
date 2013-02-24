@@ -10,22 +10,22 @@ class C_analyser
     @mode = mode
     @request_type = request_type
     case @mode
-    when /active/
-      if @request_type != "active"
+    when "a"
+      if @request_type != "a"
         return 1
       else
         return 0
       end
-    when /passive/
-      if @request_type != "passive"
+    when "p"
+      if @request_type != "p"
         return 1
       else
         return 0
       end
-    when /dual/
-      if @request_type == "passive"
+    when "dual"
+      if @request_type == "p"
         return 0
-      elsif @request_type == "active"
+      elsif @request_type == "a"
         return 0
       else
         return 1
@@ -33,7 +33,7 @@ class C_analyser
     else             # Si request_type n'est pas active|passive|dual
       return 1
     end
-  end
+  end 
 
   def createHashRequest ( tab )
     @tab_temp = tab
@@ -51,10 +51,12 @@ class C_analyser
         @request_hash["road"] = element.gsub(/^-[a-z]+=/, "")
       elsif element =~ /-tmo=/
         @request_hash["time_out"] = element.gsub(/^-[a-z]+=/, "")
-      elsif element =~ /-srv=/
-        @request_hash["service"] = element.gsub(/^-[a-z]+=/, "")
-      elsif element =~ /-h=/
-        @request_hash["hostname"] = element.gsub(/^-[a-z]+=/, "") 
+      elsif element =~ /-ntype=/
+        @request_hash["notified_type"] = element.gsub(/^-[a-z]+=/, "")
+      elsif element =~ /-nserv=/
+        @request_hash["notified_service"] = element.gsub(/^-[a-z]+=/, "")
+      elsif element =~ /-nhost=/
+        @request_hash["notified_host"] = element.gsub(/^-[a-z]+=/, "") 
       elsif element =~ /-rc=/
         @request_hash["return_code"] = element.gsub(/^-[a-z]+=/, "")
       elsif element =~ /-msg=/
@@ -87,29 +89,50 @@ class C_analyser
     # host ; service ; return_code ;
     @request_hash = hash
     @tab_error = Array.new
+    @ntype_state = '0'
+    
 
-    #On verifie que la key timestamp_passive est disponible
-    if !@request_hash.has_key? "timestamp_passive"
-      @tab_error.push('timestamp_passive (-tsp)')
+    if !@request_hash.has_key? "notified_type"
+      @tab_error.push ('ntype')
+      @ntype_state = '1'
     end
-    #On verifie que la key host est disponible
-    if !@request_hash.has_key? "hostname"
-      @tab_error.push('hostname (-h)')
-    end 
-    #On verifie que la key service est disponible
-    if !@request_hash.has_key? "service"
-      @tab_error.push('service (-srv)')
-    end 
-    #On verifie que la key return_code est disponible
-    if !@request_hash.has_key? "return_code"
-      @tab_error.push('return_code (-rc)')
-    end 
-    #On verifie que la key message est disponible
-    if !@request_hash.has_key? "message"
-      @tab_error.push('message (-msg)')
-    end 
-    # on retourne le tableau d'erreur
-    return @tab_error
+
+
+    if @ntype_state == '0'
+
+      #On verifie que la key timestamp_passive est disponible
+      if !@request_hash.has_key? "timestamp_passive"
+        @tab_error.push('timestamp_passive (-tsp)')
+      end
+      #On verifie que la key notified_host est disponible
+      if !@request_hash.has_key? "notified_type"
+        @tab_error.push('notified_type (-ntype)')
+      end
+      #On verifie que la key host est disponible
+      if !@request_hash.has_key? "notified_host"
+        @tab_error.push('notified_host (-nhost)')
+      end 
+      #On verifie que la key return_code est disponible
+      if !@request_hash.has_key? "return_code"
+        @tab_error.push('return_code (-rc)')
+      end 
+      #On verifie que la key message est disponible
+      if !@request_hash.has_key? "message"
+        @tab_error.push('message (-msg)')
+      end
+
+ 
+      if @request_hash["notified_type"] == 's'  
+        if !@request_hash.has_key? "notified_service"
+          @tab_error.push('notified_service (-ntype)')
+puts "passage de la spec notified s"
+        end 
+      end 
+
+      # on retourne le tableau d'erreur
+      return @tab_error
+    end
   end
 
+### CLASS CLOSE
 end

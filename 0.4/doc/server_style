@@ -1,9 +1,0 @@
-string.gsub(/^[a-z]+=/, "")
-"blah=foobar".gsub(/^[a-z]+=/, "")
-
-
-Analyse du jeu de donnée recu => Construction de la requete à réaliser => Processing de la requete
-
-****************
-* Construction *
-****************

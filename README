@@ -8,9 +8,9 @@
     - if Passive_check type request : Write data in Nagios Command pipe 
 
   Features currently in development :
-    - Log fonction
-	- Relay fonction
+    - Relay fonction
     - Securing communication
+    - Bug Correction
 
 ++++ 2° How to use bipbipd ? ++++
  
