@@ -133,6 +133,20 @@ puts "passage de la spec notified s"
       return @tab_error
     end
   end
-
+  
+  def verif_check ( hash_config, hash_request )
+    ## Return 1 if check not exist
+    @hash_config = hash_config
+    @hash_request = hash_request
+    @check = @hash_request["check_command"]  
+    @file = "#{@hash_config["path_plugin"]}/#{@hash_request["check_command"]}"
+    @file_exist = File.exists?(@file)
+    @file_exec = File.executable?(@file)
+    if @file_exist == false || @file_exec == false
+      return 1
+    else 
+      return 0
+    end
+  end
 ### CLASS CLOSE
 end

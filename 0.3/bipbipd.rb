@@ -17,7 +17,6 @@ hash_config = Hash.new
 log = C_log.new
 config_file = 0
 config_file_exist = 0
-version = '0.4.2'
 
 # 1°- Peuplement de hash_config avec les valeurs par defaut
 hash_config["mode"] = "dual"
@@ -25,7 +24,7 @@ hash_config["path_config"] = "/etc/bipbipd/bipbipd.yaml"
 hash_config["path_plugin"] = "/etc/bipbipd/plugins"
 hash_config["path_log"] = "/var/log/bipbipd.log"
 hash_config["listen_tcp_port"] = "5666"
-hash_config["path_cmd_nagios"]="/usr/local/nagios/var/rw/nagios.cmd"
+hash_config["path_cmd_nagios"]="/usr/local/nagios/rw/nagios.cmd"
 hash_config["verbose_lvl"]="0"
 
 # 2°- Existe t'il un fichier un fichier de configuration ? 
@@ -76,19 +75,19 @@ end
 
 # 5°- Log des informations de demarrage et lancement de
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], " \n"
-log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "  ** bipbipd - Version #{version} - Cedrik MALLET **\n"
+log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "  ** bipbipd - Version 0.3 - Cedrik MALLET **\n"
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], " \n"
 
 
 case hash_config["mode"]
-when "a"
+when "active"
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "  => bibbipd start in \"active\" mode with:\n"
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    - path_config : #{hash_config["path_config"]}\n"
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    - path_log : #{hash_config["path_log"]}\n"
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    - path_plugin : #{hash_config["path_plugin"]}\n"
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    - tcp port : #{hash_config["listen_tcp_port"]}\n"
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    - verbose_lvl : #{hash_config["verbose_lvl"]}\n"
-when "p"
+when "passive"
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "  => bibbipd start in \"passive\" mode with:\n"
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    - path_config : #{hash_config["path_config"]}\n"
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    - path_log : #{hash_config["path_log"]}\n"
@@ -109,7 +108,7 @@ log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], " \n"
 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "  ** bipbipd started - Waiting connections... **\n"
 
 #####################################
-#     INSTANTIATION DU SOCKET       #
+#     INSTANTIATION DU SOCKET       #
 #####################################
 
 # Instanciation d'un objet de type TCPserver
@@ -125,7 +124,7 @@ loop do
     time = (Time.now.ctime)
     log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "      => Time : #{time}\n"
     error_analyse = 0
-    request_test = 0
+    #request_test = 0
  
     # Boucle permettant de récupérer et traiter les messages en provenance des clients
     while request = s.gets
@@ -138,8 +137,8 @@ loop do
         #      ANALYSE DE LA REQUETE        #
         #####################################
 
-        #request = "-rt=a|-chk=check_ram.sh|-args=50!30|-rly=0|"
-        #request = "-rt=p|-tsp=1348349172|-h=vm-test-01|-srv=cpu_load|-rc=2|-msg=Jai soif !"
+        #request = "-rt=active|-chk=check_ram.sh|-args=50!30|-rly=0|"
+        #request = "-rt=passive|-tsp=1348349172|-h=vm-test-01|-srv=cpu_load|-rc=2|-msg=Jai soif !"
         
         o_analyzer = C_analyser.new
         tab = o_analyzer.generate_tab( request )
@@ -169,7 +168,7 @@ loop do
 
         # En fonction du type de requete, appeler la bonne methode
         if error_analyse.to_i == 0
-          if request_hash["request_type"] == "a"
+          if request_hash["request_type"] == "active"
       	    log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "      => Request analysis : verif_active\n"
     	    verifActive = o_analyzer.verif_active ( request_hash )
     	    if verifActive.length != 0
@@ -181,55 +180,43 @@ loop do
               s.close
               error_analyse = '1'
               log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    => ** Connection closed **\n".red
-	    else
+    	    else
               log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "        => All params are found\n".green
             end
-          elsif request_hash["request_type"] == "p"
+          elsif request_hash["request_type"] == "passive"
       	    log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "      => Request analysis : verif_passive\n"
-            verifPassive = o_analyzer.verif_passive ( request_hash )
-	    if verifPassive.length != 0
+    	    verifPassive = o_analyzer.verif_passive ( request_hash )
+    	    if verifPassive.length != 0
       	      verifPassive.each do |element|
                 log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "        => ERROR - \"#{element}\" not found\n".red
               end
       	      log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "      => Error during request analysis. Request aborded\n".red
-	      #### A VERIFIER AVEC UN CLIENT LAMBDA ####
-              s.puts "ERROR during analysis: following element are not found by server :\"#{element}\"\nRequest aborded, connexion closed by server\n"
+              s.puts "Error during request analysis. Request aborded\n"
               s.close
               error_analyse = '1'
-              log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    => ** ERROR - Connection closed **\n".red
+              log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    => ** Connection closed **\n".red
     	    else
-    	      log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "        => All params are found\n".green
-            end
+              puts "        => All params are found\n".green
+    	    end
   	  end
-	    
-	  verif = o_analyzer.verif_check hash_config, request_hash
-          if verif == 1     
-  	    log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "        => check \"#{request_hash["check_command"]}\" is not available or not an executable file\n".red
-            s.puts "ERROR during analysis: check \"#{request_hash["check_command"]}\ is not available or not an executable file\nRequest aborded, connexion closed by server\n"
-            s.close
-            log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    => ** ERROR - Connection closed **\n".red
-	    error_analyse = '1'
-	  else
-	    log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "        => All params are available\n".green
-          end
         end
 
-        #####################################
+      	#####################################
 	#     PROCESSING DE LA REQUETE      #
 	#####################################
         if error_analyse.to_i == 0
 	  o_processing = C_processing.new
-	  if request_hash["request_type"] == "a"
-            log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "      => Request processing : check_active\n"         
-            result = o_processing.check_active hash_config, request_hash 
+	  if request_hash["request_type"] == "active"
+            log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "      => Request processing : check_active\n"
+  	    result = o_processing.check_active hash_config, request_hash 
   	    log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "        => Request result: #{result}\n".green
   	    s.puts result
             s.close
             log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    => ** Connection closed **\n"
 	  else
-	    log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "      => Request Processing : check_passive\n"
   	    result = o_processing.check_passive hash_config, request_hash
-            log.logPush hash_config["verbose_lvl"], 1, hash_config["path_log"], "      => Request processing Successfull\n"
+            log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "      => Request processing : check_passive\n"
+  	    log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "        => Request result: #{result}\n".green
             s.puts "Event writted ! Bye\n"
     	    s.close
             log.logPush hash_config["verbose_lvl"], 0, hash_config["path_log"], "    => ** Connection closed **\n"

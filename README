@@ -13,13 +13,15 @@
     - Bug Correction
 
 ++++ 2° How to use bipbipd ? ++++
+
+ Install "colorize" gem : gem install colorize
  
  In your bipbipd source repository :
   ./bipbipd.rb
  
-  => With this start command, bipbipd start in "dual" mode (default), verbose normal (default), and with logfile /var/log/bipbipd.log
+  => With this start command, bipbipd start in "dual" mode, verbose normal, and with logfile /var/log/bipbipd.log
     See above list of start default values :
-      => mode (-m) : dual
+          => mode (-m) : dual
 	  => verbose_lvl (-v) : 0 
 	  => path_config (-path_cfg) : /etc/bipbipd/bipbipd.yaml
 	  => path_log (-path_log) : /var/log/bipbipd.log
@@ -31,8 +33,20 @@
 
   => Active Check
   
-  Active check request's characterized by :
+    Active check request's characterized by field :
+      request_type (-rt)	=> "a" charactere for "active" 
+      check (-chk) 		=> check filename to execute. Ex:"check_test.sh"
+      arguments (-args) 	=> argument list separed by ":" delimiter. Ex:"1:2:3"
+      timeout (-tmo=) 		=> check execute timeout  
    
 
   => Passive Check
- 
+    Passive check request's characterized by field :
+      request_type (-rt)	=> "a" charactere for "passive" 
+      (-tsp)	=>
+      (-ntype)	=>
+      (-nserv)	=>
+      (-ntype)	=>
+      (-rc)	=>
+      (-msg)	=>
+      

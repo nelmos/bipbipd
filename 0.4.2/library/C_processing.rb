@@ -1,6 +1,6 @@
 class C_processing
  
- def check_active ( hash_config, hash_request )
+  def check_active ( hash_config, hash_request )
     @args = hash_request["args"].gsub(/:/, " ")
     @cmd = "#{hash_config["path_plugin"]}/#{hash_request["check_command"]} #{@args}"
     @result = %x(#{@cmd})
